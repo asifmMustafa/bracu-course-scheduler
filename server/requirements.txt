@@ -1,0 +1,10 @@
+fastapi[standard]
+uvicorn[standard]
+python-multipart
+firebase-admin
+PyPDF2
+pdfplumber
+pandas
+python-dotenv
+sqlalchemy
+psycopg2
