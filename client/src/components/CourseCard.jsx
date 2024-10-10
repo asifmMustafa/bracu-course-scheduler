@@ -12,10 +12,13 @@ const CourseCard = ({
   const options = [
     { value: "", label: "Any professor" },
     ...(faculties
-      ? faculties.map((faculty) => ({
-          value: faculty,
-          label: faculty,
-        }))
+      ? faculties
+          .slice()
+          .sort()
+          .map((faculty) => ({
+            value: faculty,
+            label: faculty,
+          }))
       : []),
   ];
 
