@@ -1,8 +1,6 @@
 import React from "react";
 
-const ScheduleDisplay = ({ schedule }) => {
-  console.log("Received Schedule:", schedule);
-
+const ScheduleDisplay = React.forwardRef(({ schedule }, ref) => {
   const daysOfWeek = [
     "Sunday",
     "Monday",
@@ -13,7 +11,6 @@ const ScheduleDisplay = ({ schedule }) => {
     "Saturday",
   ];
 
-  // Define fixed time slots
   const timeSlots = [
     "08:00 AM - 09:20 AM",
     "09:30 AM - 10:50 AM",
@@ -23,13 +20,11 @@ const ScheduleDisplay = ({ schedule }) => {
     "03:30 PM - 04:50 PM",
   ];
 
-  // Create an array of time slot objects
   const timeSlotObjects = timeSlots.map((slot) => {
     const [start, end] = slot.split(" - ");
     return { slot, start, end };
   });
 
-  // Initialize scheduleMap with fixed time slots and days of the week
   const scheduleMap = {};
   timeSlots.forEach((slot) => {
     scheduleMap[slot] = {};
@@ -38,13 +33,11 @@ const ScheduleDisplay = ({ schedule }) => {
     });
   });
 
-  // Populate the scheduleMap with class session details
   schedule.forEach((section) => {
     section.classes.forEach((classSession) => {
       const { day, start_time, end_time, room } = classSession;
       const { course_code, faculty, section_number } = section;
 
-      // Find the matching time slot for this class session
       const matchingSlot = timeSlotObjects.find(
         (slotObj) => slotObj.start === start_time && slotObj.end === end_time
       );
@@ -64,46 +57,52 @@ const ScheduleDisplay = ({ schedule }) => {
   });
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full border-collapse">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2 bg-gray-200">Time</th>
-            {daysOfWeek.map((day) => (
-              <th key={day} className="border px-4 py-2 bg-gray-200">
-                {day}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {timeSlots.map((time, index) => (
-            <tr key={index} className="text-center">
-              <td className="border px-4 py-2">{time}</td>
+    <div ref={ref}>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse table-fixed">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2 bg-gray-200 w-32">Time</th>
               {daysOfWeek.map((day) => (
-                <td key={day} className="border px-4 py-2">
-                  {scheduleMap[time][day] ? (
-                    <div className="flex flex-col">
-                      <span className="font-semibold">
-                        {scheduleMap[time][day].course_code} (Sec{" "}
-                        {scheduleMap[time][day].section_number})
-                      </span>
-                      <span>{scheduleMap[time][day].faculty}</span>
-                      <span className="text-sm text-gray-600">
-                        Room: {scheduleMap[time][day].room}
-                      </span>
-                    </div>
-                  ) : (
-                    "-"
-                  )}
-                </td>
+                <th key={day} className="border px-4 py-2 bg-gray-200 w-32">
+                  {day}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {timeSlots.map((time, index) => (
+              <tr key={index} className="text-center">
+                <td className="border px-4 py-2 h-24">
+                  <div className="flex items-center justify-center h-full">
+                    {time}
+                  </div>
+                </td>
+                {daysOfWeek.map((day) => (
+                  <td key={day} className="border px-4 py-2 h-24">
+                    {scheduleMap[time][day] ? (
+                      <div className="flex flex-col items-center justify-center h-full text-sm">
+                        <span className="font-semibold">
+                          {scheduleMap[time][day].course_code}
+                        </span>
+                        <span>Sec {scheduleMap[time][day].section_number}</span>
+                        <span>{scheduleMap[time][day].faculty}</span>
+                        <span className="text-sm text-gray-600">
+                          Room: {scheduleMap[time][day].room}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-};
+});
 
 export default ScheduleDisplay;

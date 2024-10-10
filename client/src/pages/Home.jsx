@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Select from "react-select";
-import { Carousel } from "react-responsive-carousel";
-import "../styles/carousel.min.css";
-import ScheduleDisplay from "../components/ScheduleDisplay";
+import SearchBar from "../components/SearchBar";
+import CourseCard from "../components/CourseCard";
+import DaysSelector from "../components/DaysSelector";
+import ScheduleCarousel from "../components/ScheduleCarousel";
+import LoadingSplnner from "../components/LoadingSplnner";
 
 const Home = () => {
-  const [courses, setCourses] = useState([]);
   const [courseOptions, setCourseOptions] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [faculties, setFaculties] = useState({});
+  const [schedules, setSchedules] = useState([[]]);
+  const [isLoading, setIsLoading] = useState(false);
   const [preferences, setPreferences] = useState({
-    facultyPreferences: {},
+    faculties: {},
     unavailableDays: [],
   });
   const [availableDays] = useState([
@@ -23,29 +25,9 @@ const Home = () => {
     "Friday",
     "Saturday",
   ]);
-  const [schedules, setSchedules] = useState([]);
-  const [showCarousel, setShowCarousel] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/courses")
-      .then((response) => {
-        setCourses(response.data);
-        const options = response.data.map((course) => ({
-          value: course.code,
-          label: course.code,
-        }));
-        setCourseOptions(options);
-      })
-      .catch((error) => {
-        console.error("Error fetching courses:", error);
-      });
-  }, []);
-
-  const handleCourseChange = (selectedOptions) => {
-    const selected = selectedOptions
-      ? selectedOptions.map((opt) => opt.value)
-      : [];
+  const handleSelectCourse = (course) => {
+    const selected = [...selectedCourses, course];
     setSelectedCourses(selected);
 
     selected.forEach((course) => {
@@ -65,144 +47,130 @@ const Home = () => {
     });
   };
 
+  const handleRemoveSelectedCourse = (course) => {
+    setPreferences((prevPreferences) => {
+      const { [course]: _, ...updatedFaculties } = prevPreferences.faculties;
+      return {
+        ...prevPreferences,
+        faculties: updatedFaculties,
+      };
+    });
+
+    setSelectedCourses((prevCourses) =>
+      prevCourses.filter((c) => c !== course)
+    );
+  };
+
   const handleFacultyPreferenceChange = (course, faculty) => {
     setPreferences((prev) => ({
       ...prev,
-      facultyPreferences: {
-        ...prev.facultyPreferences,
+      faculties: {
+        ...prev.faculties,
         [course]: faculty,
       },
     }));
   };
 
-  const handleUnavailableDaysChange = (day) => {
-    setPreferences((prev) => {
-      const days = prev.unavailableDays.includes(day)
-        ? prev.unavailableDays.filter((d) => d !== day)
-        : [...prev.unavailableDays, day];
-      return { ...prev, unavailableDays: days };
-    });
+  const handleUnavailableDaysChange = (days) => {
+    setPreferences((prev) => ({
+      ...prev,
+      unavailableDays: days,
+    }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    setIsLoading(true);
     const data = {
       courses: selectedCourses,
-      preferences: preferences.facultyPreferences,
+      preferences: preferences.faculties,
       unavailable_days: preferences.unavailableDays,
     };
     axios
       .post("http://localhost:8000/api/schedules", data)
       .then((response) => {
-        console.log("Received schedules:", response.data);
         setSchedules(response.data);
-        setShowCarousel(true);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error fetching schedules:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   useEffect(() => {
-    console.log(schedules);
-  }, [schedules]);
+    axios
+      .get("http://localhost:8000/api/courses")
+      .then((response) => {
+        const options = response.data.map((course) => ({
+          value: course.code,
+          label: course.code,
+        }));
+        setCourseOptions(options);
+      })
+      .catch((error) => {
+        console.error("Error fetching courses:", error);
+      });
+  }, []);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Course Scheduler</h1>
-      {!showCarousel ? (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Select Courses:</label>
-            <Select
-              isMulti
-              options={courseOptions}
-              onChange={handleCourseChange}
-              placeholder="Search and select courses..."
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
-          </div>
-
-          {selectedCourses.map((course) => (
-            <div key={course} className="mb-4">
-              <label className="block text-gray-700">
-                Preferred Faculty for {course}:
-              </label>
-              <select
-                className="w-full mt-1 p-2 border rounded"
-                onChange={(e) =>
-                  handleFacultyPreferenceChange(course, e.target.value)
-                }
-              >
-                <option value="">No Preference</option>
-                {faculties[course] &&
-                  faculties[course].map((faculty) => (
-                    <option key={faculty} value={faculty}>
-                      {faculty}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          ))}
-
-          <div className="mb-4">
-            <label className="block text-gray-700">Days Unavailable:</label>
-            <div className="flex flex-wrap mt-1">
-              {availableDays.map((day) => (
-                <label key={day} className="mr-4">
-                  <input
-                    type="checkbox"
-                    className="mr-1"
-                    checked={preferences.unavailableDays.includes(day)}
-                    onChange={() => handleUnavailableDaysChange(day)}
-                  />
-                  {day}
-                </label>
-              ))}
-            </div>
-          </div>
-
+    <div className="bg-white w-full flex-grow p-5 poppins-light text-sm md:text-base">
+      <div className="flex flex-row justify-between border-b-2 border-gray-100 mb-2 md:mb-5 pb-3">
+        <h1 className="text-2xl md:text-3xl mx-auto md:mx-0 font-bold">
+          BracU Course Scheduler
+        </h1>
+        <button
+          onClick={() => handleSubmit()}
+          className={`hidden md:flex bg-blue-500 hover:bg-blue-600 px-4 py-2 font-medium rounded-md items-center justify-center text-white ${
+            isLoading ? "cursor-not-allowed" : ""
+          }`}
+          disabled={isLoading}
+        >
+          Get Schedules
+          {isLoading ? <LoadingSplnner /> : null}
+        </button>
+      </div>
+      <div className="w-full flex flex-col md:flex-row">
+        <div className="w-full md:w-1/4 flex flex-col">
+          <SearchBar
+            courseOptions={courseOptions}
+            selectedCourses={selectedCourses}
+            handleSelectCourse={handleSelectCourse}
+          />
+          <DaysSelector
+            availableDays={availableDays}
+            unavailableDays={preferences.unavailableDays}
+            handleUnavailableDaysChange={handleUnavailableDaysChange}
+          />
           <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={() => handleSubmit()}
+            className={`flex md:hidden bg-blue-500 px-4 py-3 mb-8 font-medium rounded-md items-center justify-center text-white ${
+              isLoading ? "cursor-not-allowed" : ""
+            }`}
+            disabled={isLoading}
           >
             Get Schedules
+            {isLoading ? <LoadingSplnner /> : null}
           </button>
-        </form>
-      ) : (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">
-            Possible Schedules ({schedules.length})
-          </h2>
-          {schedules.length === 0 ? (
-            <p className="text-red-500">
-              No possible schedules found. Please adjust your preferences.
-            </p>
-          ) : (
-            <Carousel showThumbs={false} infiniteLoop useKeyboardArrows>
-              {schedules.map((schedule, index) => (
-                <div key={index}>
-                  <ScheduleDisplay schedule={schedule} />
-                </div>
-              ))}
-            </Carousel>
+          {selectedCourses.length > 0 && (
+            <span className="mt-4 font-light text-md">Selected courses:</span>
           )}
-          <button
-            onClick={() => {
-              setShowCarousel(false);
-              setSelectedCourses([]);
-              setPreferences({
-                facultyPreferences: {},
-                unavailableDays: [],
-              });
-            }}
-            className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
-          >
-            Back to Preferences
-          </button>
+          {selectedCourses.map((course) => (
+            <CourseCard
+              key={course}
+              course={course}
+              faculties={faculties[course]}
+              selectedFaculty={preferences.faculties[course]}
+              handleFacultyPreferenceChange={handleFacultyPreferenceChange}
+              handleRemoveSelectedCourse={handleRemoveSelectedCourse}
+            />
+          ))}
         </div>
-      )}
+        <div className="w-full md:w-3/4 px-0 md:px-16">
+          <ScheduleCarousel schedules={schedules} />
+        </div>
+      </div>
     </div>
   );
 };
