@@ -13,6 +13,8 @@ Tech stack:
 
 The client is hosted on Netlify, server docker image is hosted on Render and database on CockroachDB Cloud.
 
+https://bracu-course-schedule.netlify.app/
+
 ## Installation
 
 Clone the repo:
