@@ -126,7 +126,7 @@ const Home = () => {
         </h1>
         <button
           onClick={() => handleSubmit()}
-          className={`hidden md:flex bg-blue-500 hover:bg-blue-600 px-4 py-2 font-medium rounded-md items-center justify-center text-white ${
+          className={`hidden md:flex bg-blue-600 hover:bg-blue-500 px-4 py-2 font-medium rounded-md items-center justify-center text-white ${
             isLoading ? "cursor-not-allowed" : ""
           }`}
           disabled={isLoading}
@@ -149,7 +149,7 @@ const Home = () => {
           />
           <button
             onClick={() => handleSubmit()}
-            className={`flex md:hidden bg-blue-500 px-4 py-3 mb-8 font-medium rounded-md items-center justify-center text-white ${
+            className={`flex md:hidden bg-blue-600 px-4 py-3 mb-8 font-medium rounded-md items-center justify-center text-white ${
               isLoading ? "cursor-not-allowed" : ""
             }`}
             disabled={isLoading}
