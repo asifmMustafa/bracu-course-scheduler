@@ -2,6 +2,7 @@ server/venv
 server/.env
 server/test.py
 server/__pycache__
+server/certs
 
 client/node_modules
 client/dist

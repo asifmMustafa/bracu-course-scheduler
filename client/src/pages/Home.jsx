@@ -33,7 +33,11 @@ const Home = () => {
     selected.forEach((course) => {
       if (!faculties[course]) {
         axios
-          .get(`http://localhost:8000/api/courses/${course}/faculties`)
+          .get(
+            `${
+              import.meta.env.VITE_SERVER_BASE_URL
+            }/api/courses/${course}/faculties`
+          )
           .then((response) => {
             setFaculties((prev) => ({ ...prev, [course]: response.data }));
           })
@@ -86,7 +90,7 @@ const Home = () => {
       unavailable_days: preferences.unavailableDays,
     };
     axios
-      .post("http://localhost:8000/api/schedules", data)
+      .post(`${import.meta.env.VITE_SERVER_BASE_URL}/api/schedules`, data)
       .then((response) => {
         setSchedules(response.data);
         console.log(response.data);
@@ -101,7 +105,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/courses")
+      .get(`${import.meta.env.VITE_SERVER_BASE_URL}/api/courses`)
       .then((response) => {
         const options = response.data.map((course) => ({
           value: course.code,

@@ -25,4 +25,4 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(course_router)
 app.include_router(schedule_router)
-app.include_router(update_database_router)
+# app.include_router(update_database_router)
