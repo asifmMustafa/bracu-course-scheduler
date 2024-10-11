@@ -73,22 +73,22 @@ const ScheduleDisplay = React.forwardRef(({ schedule }, ref) => {
           <tbody>
             {timeSlots.map((time, index) => (
               <tr key={index} className="text-center">
-                <td className="border px-4 py-2 h-24">
+                <td className="border px-4 py-2 h-20">
                   <div className="flex items-center justify-center h-full">
                     {time}
                   </div>
                 </td>
                 {daysOfWeek.map((day) => (
-                  <td key={day} className="border px-4 py-2 h-24">
+                  <td key={day} className="border px-4 py-2 h-20">
                     {scheduleMap[time][day] ? (
-                      <div className="flex flex-col items-center justify-center h-full text-sm">
+                      <div className="flex flex-col items-center justify-center h-full text-xs">
                         <span className="font-semibold">
                           {scheduleMap[time][day].course_code}
                         </span>
                         <span>Sec {scheduleMap[time][day].section_number}</span>
                         <span>{scheduleMap[time][day].faculty}</span>
-                        <span className="text-sm text-gray-600">
-                          Room: {scheduleMap[time][day].room}
+                        <span className="text-xs text-gray-600">
+                          {scheduleMap[time][day].room}
                         </span>
                       </div>
                     ) : (

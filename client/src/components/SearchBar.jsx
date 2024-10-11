@@ -72,7 +72,7 @@ const SearchBar = ({ courseOptions, selectedCourses, handleSelectCourse }) => {
   return (
     <div
       ref={wrapperRef}
-      className="relative w-full pt-2 pb-4 md:pb-6 md:pt-2 border-b-2 border-gray-100"
+      className="relative w-full pt-2 pb-4 md:pt-2 border-b-2 border-gray-100"
     >
       {/* Search Input */}
       <div className="flex items-center border border-gray-300 rounded-full px-4 py-2 bg-white shadow-inner">

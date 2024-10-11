@@ -119,9 +119,9 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="bg-white w-full flex-grow p-5 poppins-light text-sm md:text-base">
-      <div className="flex flex-row justify-between border-b-2 border-gray-100 mb-2 md:mb-5 pb-3">
-        <h1 className="text-2xl md:text-3xl mx-auto md:mx-0 font-bold">
+    <div className="bg-white w-full flex-grow p-5 poppins-light text-xs md:text-sm">
+      <div className="flex flex-row justify-between border-b-2 border-gray-100 mb-2 pb-2">
+        <h1 className="text-xl md:text-2xl mx-auto md:mx-0 font-bold">
           BracU Course Scheduler
         </h1>
         <button
@@ -158,7 +158,7 @@ const Home = () => {
             {isLoading ? <LoadingSplnner /> : null}
           </button>
           {selectedCourses.length > 0 && (
-            <span className="mt-4 font-light text-md">Selected courses:</span>
+            <span className="mt-4 font-light text-sm">Selected courses:</span>
           )}
           {selectedCourses.map((course) => (
             <CourseCard

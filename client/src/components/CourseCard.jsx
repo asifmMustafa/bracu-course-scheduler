@@ -51,9 +51,9 @@ const CourseCard = ({
   };
 
   return (
-    <div key={course} className="py-4 md:py-6 border-b-2 border-gray-100">
+    <div key={course} className="py-4 md:py-4 border-b-2 border-gray-100">
       <div className="flex flex-row justify-between mb-3 px-1">
-        <span className="font-light text-md">{course}</span>
+        <span className="font-light text-sm">{course}</span>
         <button
           onClick={() => handleRemoveSelectedCourse(course)}
           className="px-1 grid items-center bg-red-600 hover:bg-red-700 text-white rounded-md"

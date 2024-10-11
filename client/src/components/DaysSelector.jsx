@@ -42,7 +42,7 @@ const DaysSelector = ({
   };
 
   return (
-    <div className="mt-4 pb-6 border-b-2 border-gray-100">
+    <div className="mt-4 pb-4 border-b-2 border-gray-100">
       <h2 className="mb-2 pl-1">Pick days with no classes:</h2>
       <Select
         options={options}
